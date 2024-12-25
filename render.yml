@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: laravel-api
+    runtime: docker
+    repo: https://github.com/username/laravel-api
+    branch: main
+    plan: free
+    envVars:
+      - key: APP_KEY
+        value: <app-key>
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        value: <database-host>
+      - key: DB_DATABASE
+        value: <database-name>
+      - key: DB_USERNAME
+        value: <database-username>
+      - key: DB_PASSWORD
+        value: <database-password>
+    dockerfilePath: ./Dockerfile
