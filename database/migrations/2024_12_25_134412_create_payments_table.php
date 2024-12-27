@@ -12,8 +12,10 @@ class CreatePaymentsTable extends Migration
             $table->id();
             $table->string('title')->nullable();
             $table->text('description')->nullable();
-            $table->foreignId('account')->constrained('accounts')->onDelete('cascade');
-            $table->foreignId('category')->constrained('categories')->onDelete('cascade');
+            $table->unsignedBigInteger('account')->nullable(); // Tambahkan kolom account
+            $table->unsignedBigInteger('category')->nullable(); 
+            $table->foreign('account')->references('id')->on('accounts')->onDelete('cascade');
+            $table->foreign('category')->references('id')->on('categories')->onDelete('cascade');
             $table->decimal('amount', 15, 2);
             $table->enum('type', ['DR', 'CR']); // Debit or Credit
             $table->timestamp('datetime');

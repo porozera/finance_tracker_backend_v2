@@ -19,15 +19,13 @@ class Payment extends Model
         'datetime'
     ];
 
-    // Relasi ke Account
     public function account()
     {
-        return $this->belongsTo(Account::class);
+        return $this->belongsTo(Account::class, 'account'); // pastikan nama kolom foreign key benar
     }
-
-    // Relasi ke Category
+    
     public function category()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class, 'category'); // pastikan nama kolom foreign key benar
     }
 }
