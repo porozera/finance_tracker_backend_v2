@@ -14,7 +14,7 @@ class Category extends Model
         'icon', 
         'color', 
         'budget', 
-        'type'
+        'expense'
     ];
 
     // Relasi ke Payments

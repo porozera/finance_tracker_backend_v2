@@ -16,6 +16,9 @@ class CreateAccountsTable extends Migration
             $table->bigInteger('icon');
             $table->bigInteger('color');
             $table->boolean('isDefault')->default(false);
+            $table->decimal('balance', 15, 2)->nullable();
+            $table->decimal('income', 15, 2)->nullable();
+            $table->decimal('expense', 15, 2)->nullable();
             $table->timestamps();
         });
     }

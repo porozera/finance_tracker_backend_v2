@@ -20,18 +20,37 @@ class PaymentController extends Controller
             'account' => 'required|integer',
             'category' => 'required|integer',
             'amount' => 'required|numeric',
-            'type' => 'required|string',
+            'type' => 'required|string|in:CR,DR', // Validasi nilai type hanya CR atau DR
             'datetime' => 'nullable|date_format:Y-m-d H:i:s',
         ]);
-
+    
+        // Simpan data pembayaran
         $payment = new Payment($validated);
         $payment->save();
+    
+        $account = Account::findOrFail($validated['account']); 
+    
+        if ($validated['type'] == "CR") {
+            $account->income += $validated['amount'];
+            $account->balance += $validated['amount'];
+        } elseif ($validated['type'] == "DR") {
+            $account->expense += $validated['amount'];
+            $account->balance -= $validated['amount'];
+        }
+        $account->save();
 
+        $category = Category::findOrFail($validated['category']);
+        if ($validated['type'] == "DR"){
+            $category->expense += $validated['amount'];
+        }
+        $category->save();
+    
         return response()->json([
             'id' => $payment->id,
-            'message' => 'Category created successfully.',
+            'message' => 'Payment created successfully.',
         ], 201);
     }
+    
 
     // Menampilkan daftar pembayaran dengan filter
     public function index(Request $request)
@@ -78,21 +97,55 @@ class PaymentController extends Controller
             'account' => 'required|integer',
             'category' => 'required|integer',
             'amount' => 'required|numeric',
-            'type' => 'required|string',
+            'type' => 'required|string|in:CR,DR', // Validasi nilai type hanya CR atau DR
             'datetime' => 'nullable|date_format:Y-m-d H:i:s',
         ]);
 
-        $payment = Payment::find($id);
-        if (!$payment) {
-            return response()->json(['message' => 'Payment not found'], 404);
+        // Temukan data pembayaran lama
+        $payment = Payment::findOrFail($id);
+
+        // Ambil akun dan kategori terkait
+        $account = Account::findOrFail($payment->account);
+        $category = Category::findOrFail($payment->category);
+
+        // Kembalikan jumlah lama ke nilai awal
+        if ($payment->type == "CR") {
+            $account->income -= $payment->amount;
+            $account->balance -= $payment->amount;
+        } elseif ($payment->type == "DR") {
+            $account->expense -= $payment->amount;
+            $account->balance += $payment->amount;
+            $category->expense -= $payment->amount;
         }
 
+        // Simpan perubahan pada akun dan kategori
+        $account->save();
+        $category->save();
+
+        // Perbarui data pembayaran dengan data baru
         $payment->update($validated);
 
+        // Terapkan perubahan baru pada akun dan kategori
+        $account = Account::findOrFail($validated['account']);
+        $category = Category::findOrFail($validated['category']);
+
+        if ($validated['type'] == "CR") {
+            $account->income += $validated['amount'];
+            $account->balance += $validated['amount'];
+        } elseif ($validated['type'] == "DR") {
+            $account->expense += $validated['amount'];
+            $account->balance -= $validated['amount'];
+            $category->expense += $validated['amount'];
+        }
+
+        // Simpan perubahan akhir
+        $account->save();
+        $category->save();
+
         return response()->json([
-            'message' => 'Payment successfully updated',
-            'payment' => $payment
-        ]);
+            'id' => $payment->id,
+            'message' => 'Payment updated successfully.',
+        ], 200);
     }
 
     // Menghapus Payment

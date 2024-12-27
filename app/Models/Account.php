@@ -15,7 +15,10 @@ class Account extends Model
         'accountNumber', 
         'icon', 
         'color', 
-        'isDefault'
+        'isDefault',
+        'balance',
+        'income',
+        'expense'
     ];
 
     // Relasi ke Payments

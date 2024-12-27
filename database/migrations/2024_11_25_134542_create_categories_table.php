@@ -14,7 +14,7 @@ class CreateCategoriesTable extends Migration
             $table->bigInteger('icon');
             $table->bigInteger('color');
             $table->decimal('budget', 15, 2)->nullable();
-            $table->enum('type', ['expense', 'income'])->nullable();
+            $table->decimal('expense', 15, 2)->nullable();
             $table->timestamps();
         });
     }
